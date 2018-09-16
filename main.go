@@ -7,7 +7,7 @@ import (
 
 	"piktr/server"
 
-	"piktr/json"
+	"piktr/response"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -31,8 +31,8 @@ func main() {
 	srv.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
 		w.WriteHeader(http.StatusOK)
-		json.ToJSON(w, "Test")
+		response.JSON(w, "Test")
 	})
 
-	srv.StartTLS(certKey, privKey)
+	srv.Start()
 }
