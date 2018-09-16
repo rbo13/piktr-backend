@@ -56,7 +56,7 @@ func New(serverAddress string, router *chi.Mux) *Server {
 
 // Start boots-up a server
 // that runs on plain HTTP
-func (srvr *Server) Start(cert, privKey string) {
+func (srvr *Server) Start() {
 	log.Printf("Server is running on http://localhost%s", srvr.address)
 	err := srvr.HTTPServer.ListenAndServe()
 	if err != nil {
