@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"piktr/url"
+	"piktr/app/url"
 )
 
 func TestRandomizing(t *testing.T) {

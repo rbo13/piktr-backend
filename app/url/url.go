@@ -6,7 +6,7 @@ import (
 	"time"
 	"unicode"
 
-	"piktr/url/url_helper"
+	"piktr/app/url/url_helper"
 )
 
 // URL defines the set of
