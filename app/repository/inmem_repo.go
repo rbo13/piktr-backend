@@ -1,15 +1,7 @@
 package repository
 
 import (
-	"errors"
 	"piktr/app/model"
-)
-
-var (
-	errNotInserted  = errors.New("User not inserted")
-	errNotUpdated   = errors.New("User not updated")
-	errIDIsRequired = errors.New("ID is required")
-	errNotFound     = errors.New("User not found")
 )
 
 // InMemRepo is the concrete implementation
@@ -30,7 +22,7 @@ func NewInMemRepo() *InMemRepo {
 // Create ...
 func (r *InMemRepo) Create(user *model.User) (*model.User, error) {
 	if user == nil {
-		return nil, errNotInserted
+		return nil, model.ErrNotInserted
 	}
 	r.data[user.ID] = user
 	return r.data[user.ID], nil
@@ -39,11 +31,11 @@ func (r *InMemRepo) Create(user *model.User) (*model.User, error) {
 // FindByID ...
 func (r *InMemRepo) FindByID(id int64) (*model.User, error) {
 	if id <= 0 {
-		return nil, errIDIsRequired
+		return nil, model.ErrIDIsRequired
 	}
 
 	if r.data[id] == nil {
-		return nil, errNotFound
+		return nil, model.ErrNotFound
 	}
 	return r.data[id], nil
 }
@@ -60,7 +52,7 @@ func (r *InMemRepo) FindAll() ([]*model.User, error) {
 // Update ...
 func (r *InMemRepo) Update(user *model.User) (*model.User, error) {
 	if user == nil {
-		return nil, errNotUpdated
+		return nil, model.ErrNotUpdated
 	}
 
 	if r.data[user.ID] == user {
@@ -68,13 +60,13 @@ func (r *InMemRepo) Update(user *model.User) (*model.User, error) {
 		return r.data[user.ID], nil
 	}
 
-	return nil, errNotFound
+	return nil, model.ErrNotFound
 }
 
 // Delete ...
 func (r *InMemRepo) Delete(id int64) error {
 	if id <= 0 {
-		return errIDIsRequired
+		return model.ErrIDIsRequired
 	}
 	r.data[id] = nil
 	return nil
