@@ -53,14 +53,14 @@ func (sql *SQLDb) FindByID(id int64) (*model.User, error) {
 
 // FindAll ...
 func (sql *SQLDb) FindAll() ([]*model.User, error) {
-	var user []*model.User
+	var users []*model.User
 
-	err := sql.db.Debug().Find(&user).Error
+	err := sql.db.Debug().Find(&users).Error
 
 	if err != nil {
 		return nil, model.ErrNotFound
 	}
-	return user, nil
+	return users, nil
 }
 
 // Update ...
