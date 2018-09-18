@@ -46,7 +46,7 @@ func (sql *SQLDb) FindByID(id int64) (*model.User, error) {
 	err := sql.db.Debug().First(&user, id).Error
 
 	if err != nil {
-		return nil, model.ErrNotInserted
+		return nil, model.ErrNotFound
 	}
 	return user, nil
 }
@@ -58,7 +58,7 @@ func (sql *SQLDb) FindAll() ([]*model.User, error) {
 	err := sql.db.Debug().Find(&user).Error
 
 	if err != nil {
-		return nil, model.ErrNotInserted
+		return nil, model.ErrNotFound
 	}
 	return user, nil
 }
