@@ -8,6 +8,7 @@ import (
 
 	"piktr/server"
 
+	"piktr/app/db"
 	"piktr/app/repository"
 	"piktr/app/response"
 
@@ -24,18 +25,29 @@ var (
 )
 
 var gormDB *gorm.DB
+var dbName = "piktr"
+
+var dns = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "", "localhost", "3306", "mysql")
 
 func init() {
-	gormDB, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
+	gormDB, err := gorm.Open("mysql", dns)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer gormDB.Close()
+
+	newDB := db.New(gormDB)
+	
+	err = db.Setup(gormDB, dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newDB.MigrateTables()
+
+	gormDB.Close()
 }
 
 func main() {
-	sqlDB := repository.NewSQLDb(gormDB)
-
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -44,6 +56,7 @@ func main() {
 
 	srv := server.New(serverAddress, r)
 
+	sqlDB := repository.NewSQLDb(gormDB)
 	log.Print(sqlDB)
 
 	srv.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
