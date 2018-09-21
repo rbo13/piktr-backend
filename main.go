@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"os"
 
+	"piktr/app/domain/user"
+	"piktr/app/response"
 	"piktr/server"
 
-	"piktr/app/db"
-	"piktr/app/repository"
-	"piktr/app/response"
+	"piktr/app/database/mysql"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -22,32 +22,36 @@ var (
 	serverAddress = fmt.Sprintf(":%s", os.Getenv("PORT"))
 	certKey       = "./certs/cert.local.pem"
 	privKey       = "./certs/key.local.pem"
+	dbName        = "piktr"
 )
 
-var gormDB *gorm.DB
-var dbName = "piktr"
-
-var dns = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "", "localhost", "3306", "mysql")
-
-func init() {
-	gormDB, err := gorm.Open("mysql", dns)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	newDB := db.New(gormDB)
-	
-	err = db.Setup(gormDB, dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	newDB.MigrateTables()
-
-	gormDB.Close()
-}
-
 func main() {
+	var userRepo user.Repository
+	var dns = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "", "localhost", "3306", "mysql")
+	gormDB, err := gorm.Open("mysql", dns)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	err = gormDB.Debug().Exec("CREATE DATABASE IF NOT EXISTS " + dbName + " DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;").Error
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	err = gormDB.Debug().Exec("USE " + dbName + ";").Error
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	gormDB.AutoMigrate(&user.User{})
+
+	userRepo = mysql.NewMySQLUserRepository(gormDB)
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -56,8 +60,8 @@ func main() {
 
 	srv := server.New(serverAddress, r)
 
-	sqlDB := repository.NewSQLDb(gormDB)
-	log.Print(sqlDB)
+	userService := user.NewUserService(userRepo)
+	userHandler := user.NewHandler(userService)
 
 	srv.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
@@ -65,5 +69,9 @@ func main() {
 		response.JSON(w, "Test")
 	})
 
+	srv.Router.Get("/user", userHandler.Get)
+	srv.Router.Post("/user/create", userHandler.Create)
+
 	srv.Start()
+
 }
