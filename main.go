@@ -2,24 +2,56 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
+	"piktr/app/domain/user"
+	"piktr/app/response"
 	"piktr/server"
 
-	"piktr/app/response"
+	"piktr/app/database/mysql"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 var (
 	serverAddress = fmt.Sprintf(":%s", os.Getenv("PORT"))
 	certKey       = "./certs/cert.local.pem"
 	privKey       = "./certs/key.local.pem"
+	dbName        = "piktr"
 )
 
 func main() {
+	var userRepo user.Repository
+	var dns = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "", "localhost", "3306", "mysql")
+	gormDB, err := gorm.Open("mysql", dns)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	err = gormDB.Debug().Exec("CREATE DATABASE IF NOT EXISTS " + dbName + " DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;").Error
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	err = gormDB.Debug().Exec("USE " + dbName + ";").Error
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	gormDB.AutoMigrate(&user.User{})
+
+	userRepo = mysql.NewMySQLUserRepository(gormDB)
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -28,11 +60,18 @@ func main() {
 
 	srv := server.New(serverAddress, r)
 
+	userService := user.NewUserService(userRepo)
+	userHandler := user.NewHandler(userService)
+
 	srv.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
 		w.WriteHeader(http.StatusOK)
 		response.JSON(w, "Test")
 	})
 
+	srv.Router.Get("/user", userHandler.Get)
+	srv.Router.Post("/user/create", userHandler.Create)
+
 	srv.Start()
+
 }
