@@ -58,9 +58,9 @@ func main() {
 
 	srv.Router.Get("/user", userHandler.Get)
 	srv.Router.Post("/user/create", userHandler.Create)
+	srv.Router.Get("/user/{id}", userHandler.GetByID)
 
 	srv.Start()
-
 }
 
 func setupDatabase(dns string) (*gorm.DB, error) {
