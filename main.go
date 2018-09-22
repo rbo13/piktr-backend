@@ -34,16 +34,7 @@ func main() {
 		return
 	}
 
-	err = gormDB.Debug().Exec("USE " + dbName + ";").Error
-
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	gormDB.AutoMigrate(&user.User{})
-
-	userRepo = mysql.NewMySQLUserRepository(gormDB)
+	defer gormDB.Close()
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -53,6 +44,7 @@ func main() {
 
 	srv := server.New(serverAddress, r)
 
+	userRepo = mysql.NewMySQLUserRepository(gormDB)
 	userService := user.NewUserService(userRepo)
 	userHandler := user.NewHandler(userService)
 
@@ -81,6 +73,15 @@ func setupDatabase(dns string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = gormDB.Debug().Exec("USE " + dbName + ";").Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Migrate Tables
+	gormDB.Debug().AutoMigrate(&user.User{})
 
 	return gormDB, nil
 }
