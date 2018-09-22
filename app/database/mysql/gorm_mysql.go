@@ -29,8 +29,7 @@ func (u *userRepository) FindByID(id int64) (*user.User, error) {
 		return nil, errors.New("ID is required")
 	}
 
-	err := u.db.Debug().First(&user, id).Error
-
+	err := u.db.Debug().Table("users").Select("*").Where("id = ?", id).Limit(1).Scan(&user).Error
 	if err != nil {
 		return nil, err
 	}
