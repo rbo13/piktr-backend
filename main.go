@@ -29,6 +29,8 @@ func main() {
 
 	gormDB, err := setupDatabase(dns)
 
+	migrateTable(gormDB)
+
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -80,8 +82,10 @@ func setupDatabase(dns string) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	return gormDB, nil
+}
+
+func migrateTable(gormDB *gorm.DB) {
 	// Migrate Tables
 	gormDB.Debug().AutoMigrate(&user.User{})
-
-	return gormDB, nil
 }
