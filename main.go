@@ -28,7 +28,6 @@ func main() {
 	var userRepo user.Repository
 
 	gormDB, err := setupDatabase(dns)
-
 	migrateTable(gormDB)
 
 	if err != nil {
@@ -39,26 +38,32 @@ func main() {
 	defer gormDB.Close()
 
 	r := chi.NewRouter()
+
+	// Before anything else,
+	// apply middleware
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	srv := server.New(serverAddress, r)
-
 	userRepo = mysql.NewMySQLUserRepository(gormDB)
 	userService := user.NewUserService(userRepo)
 	userHandler := user.NewHandler(userService)
 
-	srv.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	srv := server.New(serverAddress, r)
+
+	srv.Router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
 		w.WriteHeader(http.StatusOK)
-		response.JSON(w, "Test")
+		response.JSON(w, "Ping successful")
 	})
 
-	srv.Router.Get("/user", userHandler.Get)
-	srv.Router.Post("/user/create", userHandler.Create)
-	srv.Router.Get("/user/{id}", userHandler.GetByID)
+	// user related resource
+	srv.Router.Mount("/api/users", user.Routes(r, userHandler))
+
+	//srv.Router.Get("/user", userHandler.Get)
+	//srv.Router.Post("/user/create", userHandler.Create)
+	//srv.Router.Get("/user/{id}", userHandler.GetByID)
 
 	srv.Start()
 }
