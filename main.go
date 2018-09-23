@@ -52,6 +52,7 @@ func main() {
 
 	srv := server.New(serverAddress, r)
 
+	// ping the server
 	srv.Router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
 		w.WriteHeader(http.StatusOK)
@@ -60,10 +61,6 @@ func main() {
 
 	// user related resource
 	srv.Router.Mount("/api/users", user.Routes(r, userHandler))
-
-	//srv.Router.Get("/user", userHandler.Get)
-	//srv.Router.Post("/user/create", userHandler.Create)
-	//srv.Router.Get("/user/{id}", userHandler.GetByID)
 
 	srv.Start()
 }
