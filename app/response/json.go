@@ -6,7 +6,8 @@ import (
 
 // JSON returns the v type
 // as a json response
-// using the `json.NewEncoder()`
+// by adding a content-type
+// as application/json
 func JSON(w http.ResponseWriter, v []byte) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
