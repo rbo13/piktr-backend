@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"piktr/app/response"
+
 	"github.com/go-chi/chi"
 )
 
@@ -34,28 +36,30 @@ func (u *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user User
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&user)
+
 	if err != nil {
-		log.Fatalf("Error decoding due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = u.userService.CreateUser(&user)
 
 	if err != nil {
-		log.Fatalf("Error creating user due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	response, err := json.Marshal(user)
+	res, err := json.Marshal(user)
 
-	if err != nil && response == nil {
-		log.Fatalf("Error marshaling due to: %v", err)
+	if err != nil && res == nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write(response)
+
+	err = response.JSON(w, res)
+
 	if err != nil {
-		log.Fatalf("Error writing to write header due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -75,16 +79,14 @@ func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(user)
+	res, err := json.Marshal(user)
 
-	if err != nil && response == nil {
+	if err != nil && res == nil {
 		log.Fatalf("Error marshaling due to: %v", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(response)
+	err = response.JSON(w, res)
 
 	if err != nil {
 		log.Fatalf("Error writing to write header due to: %v", err)
@@ -100,16 +102,14 @@ func (u *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(tickets)
+	res, err := json.Marshal(tickets)
 
-	if err != nil && response == nil {
+	if err != nil && res == nil {
 		log.Fatalf("Error marshaling due to: %v", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(response)
+	err = response.JSON(w, res)
 
 	if err != nil {
 		log.Fatalf("Error writing to write header due to: %v", err)
