@@ -34,28 +34,30 @@ func (u *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user User
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&user)
+
 	if err != nil {
-		log.Fatalf("Error decoding due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = u.userService.CreateUser(&user)
 
 	if err != nil {
-		log.Fatalf("Error creating user due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	response, err := json.Marshal(user)
 
 	if err != nil && response == nil {
-		log.Fatalf("Error marshaling due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write(response)
 	if err != nil {
-		log.Fatalf("Error writing to write header due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
