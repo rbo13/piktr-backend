@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"piktr/app/domain/user"
-	"piktr/app/response"
 	"piktr/server"
 
 	"piktr/app/database/mysql"
@@ -53,10 +52,10 @@ func main() {
 	srv := server.New(serverAddress, r)
 
 	// ping the server
-	srv.Router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8;")
+	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8;")
 		w.WriteHeader(http.StatusOK)
-		response.JSON(w, "Ping successful")
+		w.Write([]byte("Ping successful"))
 	})
 
 	// user related resource
