@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -112,7 +111,12 @@ func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(user)
+	userResp.User = user
+	userResp.Err = nil
+	userResp.Success = true
+	userResp.Message = "User successfully retrieved"
+
+	res, err := json.Marshal(&userResp)
 
 	if err != nil && res == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -128,24 +132,24 @@ func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *userHandler) Get(w http.ResponseWriter, r *http.Request) {
-	tickets, err := u.userService.FindAllUsers()
+	users, err := u.userService.FindAllUsers()
 
 	if err != nil {
-		log.Fatalf("Error getting list of users due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := json.Marshal(tickets)
+	res, err := json.Marshal(users)
 
 	if err != nil && res == nil {
-		log.Fatalf("Error marshaling due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = response.JSON(w, res)
 
 	if err != nil {
-		log.Fatalf("Error writing to write header due to: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
