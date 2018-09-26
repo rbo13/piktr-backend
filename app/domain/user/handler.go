@@ -17,6 +17,7 @@ type Handler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
+	Update(w http.ResponseWriter, r *http.Request)
 }
 
 type userHandler struct {
@@ -147,6 +148,75 @@ func (u *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = response.JSON(w, res)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (u *userHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	userResp := UserResponse{}
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := u.userService.FindUserByID(id)
+
+	if err != nil && user == nil {
+		errMessage := err.Error()
+
+		userResp.Success = false
+		userResp.Err = &errMessage
+		userResp.Message = "User dont exist"
+
+		errResp, err := json.Marshal(userResp)
+
+		if err != nil && errResp == nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = response.JSON(w, errResp)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&user)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = u.userService.UpdateUser(user)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userResp.User = user
+	userResp.Success = true
+	userResp.Message = "User updated successfully"
+	userResp.Err = nil
+
+	updateResponse, err := json.Marshal(userResp)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = response.JSON(w, updateResponse)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
