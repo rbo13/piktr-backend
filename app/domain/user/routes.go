@@ -9,6 +9,7 @@ func Routes(r chi.Router, handler Handler) chi.Router {
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", handler.GetByID)
+		r.Post("/", handler.Update)
 	})
 	return r
 }
