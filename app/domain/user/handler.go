@@ -62,19 +62,26 @@ func (u *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 	userResp.Message = "User created"
 	userResp.Err = nil
 
-	res, err := json.Marshal(userResp)
-
-	if err != nil && res == nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = response.JSON(w, res)
+	err = response.JSON(http.StatusOK, w, userResp)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	/*res, err := json.Marshal(userResp)*/
+
+	//if err != nil && res == nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	//}
+
+	//err = response.JSON(w, res)
+
+	//if err != nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	/*}*/
 }
 
 func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
@@ -95,19 +102,25 @@ func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		userResp.Err = &errMessage
 		userResp.Message = "User dont exist"
 
-		errResp, err := json.Marshal(userResp)
-
-		if err != nil && errResp == nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = response.JSON(w, errResp)
+		err := response.JSON(http.StatusOK, w, userResp)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		/*errResp, err := json.Marshal(userResp)*/
+
+		//if err != nil && errResp == nil {
+		//http.Error(w, err.Error(), http.StatusInternalServerError)
+		//return
+		//}
+
+		//err = response.JSON(w, errResp)
+
+		//if err != nil {
+		//http.Error(w, err.Error(), http.StatusInternalServerError)
+		//return
+		/*}*/
 
 		return
 	}
@@ -117,19 +130,27 @@ func (u *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	userResp.Success = true
 	userResp.Message = "User successfully retrieved"
 
-	res, err := json.Marshal(&userResp)
-
-	if err != nil && res == nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = response.JSON(w, res)
+	err = response.JSON(http.StatusOK, w, userResp)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
+
+	/*res, err := json.Marshal(&userResp)*/
+
+	//if err != nil && res == nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	//}
+
+	//err = response.JSON(w, res)
+
+	//if err != nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	/*}*/
 }
 
 func (u *userHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -140,14 +161,14 @@ func (u *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(users)
+	/*res, err := json.Marshal(users)*/
 
-	if err != nil && res == nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if err != nil && res == nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	/*}*/
 
-	err = response.JSON(w, res)
+	err = response.JSON(http.StatusOK, w, users)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -173,14 +194,14 @@ func (u *userHandler) Update(w http.ResponseWriter, r *http.Request) {
 		userResp.Err = &errMessage
 		userResp.Message = "User dont exist"
 
-		errResp, err := json.Marshal(userResp)
+		/*errResp, err := json.Marshal(userResp)*/
 
-		if err != nil && errResp == nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		//if err != nil && errResp == nil {
+		//http.Error(w, err.Error(), http.StatusInternalServerError)
+		//return
+		/*}*/
 
-		err = response.JSON(w, errResp)
+		err = response.JSON(http.StatusOK, w, userResp)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -209,14 +230,14 @@ func (u *userHandler) Update(w http.ResponseWriter, r *http.Request) {
 	userResp.Message = "User updated successfully"
 	userResp.Err = nil
 
-	updateResponse, err := json.Marshal(userResp)
+	/*updateResponse, err := json.Marshal(userResp)*/
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if err != nil {
+	//http.Error(w, err.Error(), http.StatusInternalServerError)
+	//return
+	/*}*/
 
-	err = response.JSON(w, updateResponse)
+	err = response.JSON(http.StatusOK, w, userResp)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
