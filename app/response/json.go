@@ -16,6 +16,10 @@ const (
 	charsetUTF8 = "charset=UTF-8"
 )
 
+type Response struct {
+	write http.ResponseWriter
+}
+
 // JSON returns the v type
 // as a json response
 // by adding a content-type
