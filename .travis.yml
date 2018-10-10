@@ -1,3 +1,14 @@
 language: go
+sudo: false
+
 go:
-    - 1.10
+  - 1.7
+  - 1.8
+  - 1.9
+  - 1.10.x
+  - 1.11.x
+  - tip
+
+install:
+  - export PATH=$GOPATH/bin:./_output/tools/etcd/bin:$PATH
+  - export GO111MODULE=on
