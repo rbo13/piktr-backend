@@ -9,6 +9,9 @@ matrix:
   allow_failures:
     - go: tip
 
+before_install:
+  - go get -v github.com/golang/lint/golint
+
 install:
   - export PATH=$GOPATH/bin:./_output/tools/etcd/bin:$PATH
   - export GO111MODULE=on
