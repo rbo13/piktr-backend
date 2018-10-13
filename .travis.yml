@@ -27,3 +27,7 @@ after_success:
 install:
   - export PATH=$GOPATH/bin:./_output/tools/etcd/bin:$PATH
   - export GO111MODULE=on
+
+branches:
+  except:
+    - /^*-v[0-9]/
