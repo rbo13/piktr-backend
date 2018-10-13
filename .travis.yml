@@ -5,9 +5,6 @@ go:
   - 1.11.x
   - tip
 
-script:
-  - CGO_ENABLED=0
-
 env:
   - CODECOV_TOKEN="5838cf8b-706e-4210-bcfc-36ff3d137666"
 
@@ -17,6 +14,15 @@ matrix:
 
 before_install:
   - go get -v github.com/golang/lint/golint
+  - go get -t -v ./...
+  - golint
+
+script:
+  - CGO_ENABLED=0
+  - go test -race -v ./... -coverprofile=coverage.txt -covermode=atomic
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 install:
   - export PATH=$GOPATH/bin:./_output/tools/etcd/bin:$PATH
