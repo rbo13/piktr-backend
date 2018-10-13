@@ -5,6 +5,9 @@ go:
   - 1.11.x
   - tip
 
+script:
+  - CGO_ENABLED=0
+
 matrix:
   allow_failures:
     - go: tip
