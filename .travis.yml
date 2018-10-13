@@ -8,6 +8,9 @@ go:
 script:
   - CGO_ENABLED=0
 
+env:
+  - CODECOV_TOKEN="5838cf8b-706e-4210-bcfc-36ff3d137666"
+
 matrix:
   allow_failures:
     - go: tip
