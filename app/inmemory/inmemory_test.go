@@ -15,8 +15,10 @@ func init() {
 func TestCreateUser(t *testing.T) {
 	// arrange
 	user := &user.User{
-		ID:    int64(1),
-		Email: "sam@smith.com", Username: "sam_smith", Password: "notsecurepassword",
+		ID:       int64(1),
+		Email:    "sam@smith.com",
+		Username: "sam_smith",
+		Password: "notsecurepassword",
 	}
 	// act
 	err := userRepo.Create(user)
@@ -39,10 +41,11 @@ func TestGetUserByID(t *testing.T) {
 	}
 
 	if user != nil {
-		t.Log(user)	
+		t.Log(user)
 	}
 
 }
+
 func TestFindAllUsers(t *testing.T) {
 	// arrange
 
@@ -60,5 +63,21 @@ func TestFindAllUsers(t *testing.T) {
 	}
 	if len(users) > 0 {
 		t.Log(&users)
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	id := 1
+
+	user := &user.User{
+		ID:       int64(id),
+		Email:    "sam@smith.com",
+		Username: "richard_burk",
+	}
+
+	err := userRepo.Update(user)
+
+	if err != nil {
+		t.Errorf("Error updating due to: %v", err)
 	}
 }
