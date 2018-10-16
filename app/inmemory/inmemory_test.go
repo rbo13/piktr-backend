@@ -13,20 +13,31 @@ func init() {
 }
 
 func TestCreateUser(t *testing.T) {
+
+	table := []struct {
+		input    *user.User
+		expected error
+	}{
+		{
+			&user.User{
+				ID:       int64(1),
+				Email:    "sam@smith.com",
+				Username: "sam_smith",
+				Password: "notsecurepassword",
+			}, nil},
+	}
+
 	// arrange
-	user := &user.User{
-		ID:       int64(1),
-		Email:    "sam@smith.com",
-		Username: "sam_smith",
-		Password: "notsecurepassword",
+	for _, tt := range table {
+		actual := userRepo.Create(tt.input)
+
+		if actual != tt.expected {
+			t.Errorf("Expected to be: %v, but got %v", tt.expected, actual)
+		}
 	}
-	// act
-	err := userRepo.Create(user)
-	// assert
-	if err != nil {
-		t.Errorf("Error creating user: %v", err)
-	}
+
 }
+
 func TestGetUserByID(t *testing.T) {
 	// arrange
 	id := int64(1)
