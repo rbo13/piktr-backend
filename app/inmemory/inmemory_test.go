@@ -92,3 +92,13 @@ func TestUpdate(t *testing.T) {
 		t.Errorf("Error updating due to: %v", err)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	id := int64(1)
+
+	err := userRepo.Delete(id)
+
+	if err != nil {
+		t.Errorf("Error updating due to: %v", err)
+	}
+}
