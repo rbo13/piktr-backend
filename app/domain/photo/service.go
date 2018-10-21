@@ -1,8 +1,6 @@
 package photo
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"time"
 )
 
@@ -21,39 +19,37 @@ type photoService struct {
 	repo Repository
 }
 
-// NewUserService returns the Service
+// NewPhotoService returns the Service
 // interface defined
-func NewUserService(repo Repository) Service {
-	return &userService{
+func NewPhotoService(repo Repository) Service {
+	return &photoService{
 		repo,
 	}
 }
 
-func (u *userService) CreateUser(user *User) error {
-	user.CreatedAt = time.Now()
-	user.Password = u.HashPassword(user.Password)
-	return u.repo.Create(user)
+func (p *photoService) CreatePhoto(ph *Photo) error {
+	ph.CreatedAt = time.Now()
+	ph.UniqueURL = p.GenerateUniqueURL()
+	return p.repo.Create(ph)
 }
 
-func (u *userService) FindUserByID(id int64) (*User, error) {
-	return u.repo.FindByID(id)
+func (p *photoService) FindPhotoByID(id int64) (*Photo, error) {
+	return p.repo.FindByID(id)
 }
 
-func (u *userService) FindAllUsers() ([]*User, error) {
-	return u.repo.FindAll()
+func (p *photoService) FindAllPhotos() ([]*Photo, error) {
+	return p.repo.FindAll()
 }
 
-func (u *userService) UpdateUser(user *User) error {
-	user.UpdatedAt = time.Now()
-	return u.repo.Update(user)
+func (p *photoService) UpdatePhoto(ph *Photo) error {
+	ph.UpdatedAt = time.Now()
+	return p.repo.Update(ph)
 }
 
-func (u *userService) DeleteUserByID(id int64) error {
-	return u.repo.Delete(id)
+func (p *photoService) DeletePhotoByID(id int64) error {
+	return p.repo.Delete(id)
 }
 
-func (u *userService) HashPassword(plainPassword string) string {
-	s := sha256.New()
-	s.Write([]byte(plainPassword))
-	return base64.URLEncoding.EncodeToString(s.Sum(nil))
+func (p *photoService) GenerateUniqueURL() string {
+	return ""
 }
