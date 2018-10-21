@@ -20,7 +20,7 @@ func GenerateUniqueURL() string {
 // randomize a given slice of words
 func randomize(words []string) string {
 	// seed the initial randomization
-	rand.Seed(time.Now().Unix() * len(words))
+	rand.Seed(time.Now().Unix() * int64(len(words)))
 	return words[rand.Intn(len(words))]
 }
 
