@@ -13,7 +13,8 @@ func UniqueURL() string {
 	adjective := randomize(adjectives())
 	noun := randomize(nouns())
 	animal := randomize(animals())
-	return formatURL(strings.Join([]string{adjective, noun, animal}, " "))
+	urlCombination := strings.Join([]string{adjective, noun, animal}, " ")
+	return format(urlCombination)
 }
 
 func randomize(words []string) string {
@@ -23,7 +24,7 @@ func randomize(words []string) string {
 }
 
 // formats a given url
-func formatURL(url string) string {
+func format(url string) string {
 	url = strings.Title(url)
 	return removeWhitespace(url)
 }
